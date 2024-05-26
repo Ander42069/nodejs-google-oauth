@@ -14,18 +14,8 @@ const app = express();
 const morgan = require('morgan');
 
 
-
-
-
-
-
-
-
-
-
-
 // 
-mongoose.connect(process.env.MONGO_URI, { useUnifiedTopology: true, useNewUrlParser: true }, () => console.log('Mongodb is connected'));
+mongoose.connect(process.env.MONGODB_URI, { useUnifiedTopology: true, useNewUrlParser: true }, () => console.log('Mongodb is connected'));
 
 
 app.set('view engine', 'ejs');
@@ -37,7 +27,7 @@ app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true }, // THIS WON'T WORK WITHOUT HTTPS
+    cookie: { secure: false }, 
     store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 

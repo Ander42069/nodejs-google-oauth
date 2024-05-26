@@ -1,29 +1,24 @@
 // NO PROBLEM HERE 
 
-
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const e = require('express');
 const User = require('../models/User');
-
-
-
-
-
 
 
 module.exports = (passport) => {
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:4000/auth/google/callback"
+        callbackURL: "http://localhost:4000/auth/google/callback",
     },
         async function (accessToken, refreshToken, profile, done) {
 
-            // console.log("Trying to access google account ", profile);
+            console.log("Trying to access google account: ", profile, " Token: ", accessToken, refreshToken);
 
             try {
-                let user = await User.findOne({ googleId: profile.id });
+                let user = await User.findOne({ id_google: profile.id });
                 if (user) {
-                    console.log("user is there");
+                    console.log("user is there: " + user);
                     done(null, user);
                 } else {
                     // id: '104768025942449345057',
@@ -35,14 +30,14 @@ module.exports = (passport) => {
                     //     }
                     //   ],
 
-
                     const newUser = {   // mistake
-                        googleId: profile.id,
+                        id_google: profile.id,
                         name: profile.displayName,
-                        photo: profile.photos[0].value
+                        
+                        image: profile.photos[0].value
                     };
                     user = await User.create(newUser);
-                    console.log("creating new user");
+                    console.log("creating new user: " + user);
                     done(null, user);
                 }
             } catch (err) {
@@ -51,8 +46,6 @@ module.exports = (passport) => {
 
         }
     ));
-
-
 
     passport.serializeUser(function (user, done) {
         done(null, user.id);
@@ -64,14 +57,3 @@ module.exports = (passport) => {
         });
     });
 }
-
-
-
-
-
-
-
-
-
-
-
